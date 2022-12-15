@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Button from '../components/Button';
-const registerEmployee = () => {
+const RegisterEmployee = () => {
   return (
     <div className='flex flex-col h-screen w-full justify-center items-center'>
       <h1>Register Employee</h1>
@@ -54,4 +54,4 @@ const registerEmployee = () => {
   );
 };
 
-export default registerEmployee;
+export default RegisterEmployee;

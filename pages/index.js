@@ -1,24 +1,7 @@
 import Link from 'next/link';
 import Button from '../components/Button';
-import { db } from '../firebase';
-import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
 
 export default function Home() {
-  const [users, setUsers] = useState([]);
-  const userCollectionRef = collection(db, 'users');
-
-  useEffect(() => {
-    const getUsers = async () => {
-      const userCollection = await getDocs(userCollectionRef);
-      setUsers(
-        userCollection.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      );
-    };
-
-    getUsers();
-  }, []);
-
   return (
     <div className='flex flex-col justify-center items-center h-screen w-full space-y-4'>
       <h1>Login</h1>
