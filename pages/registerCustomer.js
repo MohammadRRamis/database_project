@@ -4,6 +4,8 @@ import Button from '../components/Button';
 import { useState } from 'react';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const RegisterCustomer = () => {
   const [email, setEmail] = useState('');
@@ -12,6 +14,23 @@ const RegisterCustomer = () => {
   const [password, setPassword] = useState('');
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
+
+  const usersCollectionRef = collection(db, 'users');
+
+  const createUser = async (id, email, name, phone, isCustomer) => {
+    try {
+      const docRef = await addDoc(usersCollectionRef, {
+        id,
+        email,
+        name,
+        phone,
+        isCustomer,
+      });
+      console.log('Document written with ID: ', docRef.id);
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
+  };
 
   if (error) {
     console.log(error);
@@ -71,9 +90,9 @@ const RegisterCustomer = () => {
       <Link href='/'>
         <Button
           text='Register'
-          action={() => {
-            createUserWithEmailAndPassword(email, password);
-            console.log(email, password);
+          action={async () => {
+            await createUserWithEmailAndPassword(email, password);
+            await createUser(auth.currentUser?.uid, email, name, phone, true);
           }}
         ></Button>
       </Link>
