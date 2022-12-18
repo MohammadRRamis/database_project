@@ -53,14 +53,14 @@ export default function Home() {
           />
         </div>
       </div>
-      <Link href='/mainCustomer'>
+      <Link href='/Main'>
         <Button
           text='Login'
           action={() => signInWithEmailAndPassword(email, password)}
         ></Button>
       </Link>
       <p>
-        Dont have an account?{' '}
+        Dont have an account?
         <u className='cursor-pointer'>
           <Link href='/registerOption'>Register</Link>
         </u>
