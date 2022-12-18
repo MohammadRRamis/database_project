@@ -18,11 +18,11 @@ const AddPackage = () => {
   const [locationType, setLocationType] = useState('');
   const [locationName, setLocationName] = useState('');
   const [transportationType, setTransportationType] = useState('');
-  const [ScheduleNumber, setScheduleNumber] = useState('');
+  const [scheduleNumber, setScheduleNumber] = useState('');
   const [retailCenterType, setRetailCenterType] = useState('');
   const [retailCenterName, setRetailCenterName] = useState('');
 
-  const packagesCollectionRef = collection(db, 'package');
+  const packagesCollectionRef = collection(db, 'packages');
   const createPackage = async (
     email,
     weight,
@@ -37,13 +37,12 @@ const AddPackage = () => {
     locationType,
     locationName,
     transportationType,
-    ScheduleNumber,
+    scheduleNumber,
     retailCenterType,
     retailCenterName
   ) => {
     try {
       const docRef = await addDoc(packagesCollectionRef, {
-        packageId: Math.floor(Math.random() * 1000000000),
         email,
         weight,
         dimensions,
@@ -57,7 +56,7 @@ const AddPackage = () => {
         locationType,
         locationName,
         transportationType,
-        ScheduleNumber,
+        scheduleNumber,
         retailCenterType,
         retailCenterName,
       });
@@ -202,7 +201,7 @@ const AddPackage = () => {
               locationType,
               locationName,
               transportationType,
-              ScheduleNumber,
+              scheduleNumber,
               retailCenterType,
               retailCenterName
             )

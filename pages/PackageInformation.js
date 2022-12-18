@@ -35,7 +35,27 @@ const PackageInformation = () => {
         </div>
         <div className='grid grid-cols-2 gap-10'>
           {packages.map((p) => (
-            <Package key={p.value} isCustomer={false} status={p.status} />
+            <Package
+              key={p.value}
+              isCustomer={false}
+              packageId={p.id}
+              email={p.email}
+              weight={p.weight}
+              dimensions={p.dimensions}
+              value={p.value}
+              companyPayment={p.companyPayment}
+              insuranceAmount={p.insuranceAmount}
+              destination={p.destination}
+              finalDeliveryDate={p.finalDeliveryDate}
+              category={p.category}
+              status={p.status}
+              locationType={p.locationType}
+              locationName={p.locationName}
+              transportationType={p.transportationType}
+              scheduleNumber={p.scheduleNumber}
+              retailCenterType={p.retailCenterType}
+              retailCenterName={p.retailCenterName}
+            />
           ))}
         </div>
       </div>

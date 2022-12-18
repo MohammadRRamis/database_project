@@ -43,7 +43,7 @@ const Main = () => {
               }
             ></Box>
           </Link>
-          <Link href={isCustomer ? '/' : '/'}>
+          <Link href={isCustomer ? '/' : '/UserInformation'}>
             <Box
               text={
                 isCustomer
