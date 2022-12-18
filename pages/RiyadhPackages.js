@@ -1,14 +1,18 @@
 import React from 'react';
 import Package from '../components/Package';
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import Link from 'next/link';
-const PackageInformation = () => {
+
+const RiyadhPackages = () => {
   const [packages, setPackages] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(db, 'packages'));
+    const q = query(
+      collection(db, 'packages'),
+      where('destination', '==', 'Riyadh')
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const packages = [];
       querySnapshot.forEach((doc) => {
@@ -22,17 +26,10 @@ const PackageInformation = () => {
   return (
     <div className='m-10'>
       <div className='flex justify-between'>
-        <h2>Add/Remove/Edit package information</h2>
+        <h2>Packages in Riyadh</h2>
         <h3 className='hover:underline cursor-pointer'>Logout</h3>
       </div>
       <div className='flex flex-col justify-center items-center'>
-        <div className='w-[1000px] h-[50px] bg-slate-300 rounded my-10'>
-          <Link href='/AddPackage'>
-            <button className='w-full h-full border-4 px-4 border-slate-300 rounded'>
-              Add Package
-            </button>
-          </Link>
-        </div>
         <div className='grid grid-cols-2 gap-10'>
           {packages.map((p) => (
             <Package
@@ -45,7 +42,6 @@ const PackageInformation = () => {
               value={p.value}
               companyPayment={p.companyPayment}
               insuranceAmount={p.insuranceAmount}
-              paymentAmount={p.paymentAmount}
               destination={p.destination}
               finalDeliveryDate={p.finalDeliveryDate}
               category={p.category}
@@ -64,4 +60,4 @@ const PackageInformation = () => {
   );
 };
 
-export default PackageInformation;
+export default RiyadhPackages;

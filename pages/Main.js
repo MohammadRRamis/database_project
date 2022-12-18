@@ -8,7 +8,7 @@ import { db } from '../firebase';
 
 const Main = () => {
   const [isCustomer, setIsCustomer] = useState(false);
-const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, 'users'));
@@ -54,16 +54,13 @@ const [email, setEmail] = useState('');
               }
             ></Box>
           </Link>
-          <Link href={isCustomer ? '/PackageOperation' : '/UserInformation'}>
-            <Box
-              text={
-                isCustomer
-                  ? 'Send/receive package'
-                  : 'Add/Remove/Edit user information'
-              }
-            ></Box>
+          <Link
+            href='/UserInformation'
+            className={isCustomer ? 'hidden' : 'block'}
+          >
+            <Box text={'Add/Remove/Edit user information'}></Box>
           </Link>
-          <Link href={isCustomer ? '/' : '/'}>
+          <Link href={isCustomer ? '/UpdateInformation' : '/ReportOptions'}>
             <Box
               text={
                 isCustomer ? 'Update personal information' : 'Generate reports'

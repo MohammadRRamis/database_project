@@ -20,7 +20,7 @@ const UserInformation = () => {
   return (
     <div className='m-10'>
       <div className='flex justify-between p-5'>
-        <h2>Add/Remove/Edit package information</h2>
+        <h2>Add/Remove/Edit user information</h2>
         <h3 className='hover:underline cursor-pointer'>Logout</h3>
       </div>
       <div className='flex flex-col justify-center items-center'>

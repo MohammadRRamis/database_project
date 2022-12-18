@@ -1,16 +1,18 @@
 import React from 'react';
 import Package from '../components/Package';
 import { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, where} from 'firebase/firestore';
+import { collection, query, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { auth } from '../firebase';
-
 
 const SearchPackage = () => {
   const [packages, setPackages] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(db, 'packages'), where('email', '==', auth.currentUser.email));
+    const q = query(
+      collection(db, 'packages'),
+      where('email', '==', auth.currentUser.email)
+    );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const packages = [];
@@ -48,6 +50,7 @@ const SearchPackage = () => {
               value={p.value}
               companyPayment={p.companyPayment}
               insuranceAmount={p.insuranceAmount}
+              paymentAmount={p.paymentAmount}
               destination={p.destination}
               finalDeliveryDate={p.finalDeliveryDate}
               category={p.category}

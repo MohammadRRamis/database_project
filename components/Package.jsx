@@ -1,6 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
-import { doc, deleteDoc , updateDoc, collection, query, onSnapshot, where, arrayUnion} from 'firebase/firestore';
+import {
+  doc,
+  deleteDoc,
+  updateDoc,
+  collection,
+  query,
+  onSnapshot,
+  where,
+  arrayUnion,
+} from 'firebase/firestore';
 import { db } from '../firebase';
 import EditPackage from './EditPackage';
 
@@ -13,6 +22,7 @@ const Package = ({
   value,
   companyPayment,
   insuranceAmount,
+  paymentAmount,
   destination,
   finalDeliveryDate,
   category,
@@ -27,7 +37,9 @@ const Package = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [receiverEmail, setReceiverEmail] = useState('');
-const users =[];
+  const [isPaying, setIsPaying] = useState(false);
+  const [payment, setPayment] = useState(0);
+  const users = [];
   const deletePackage = async (id) => {
     try {
       await deleteDoc(doc(db, 'packages', id));
@@ -36,42 +48,54 @@ const users =[];
     }
   };
 
-    const sendPackage = async (packageId) => {
-      const q = query(collection(db, 'users'), where('email', '==', receiverEmail));
+  const sendPackage = async (packageId) => {
+    const q = query(
+      collection(db, 'users'),
+      where('email', '==', receiverEmail)
+    );
 
-      await onSnapshot (q, (querySnapshot) => {
-      querySnapshot.forEach( async (document) => {
-      users.push({ ...document.data(), id: document.id });
-      try{
-        console.log(users[0].email);
-        // let packages = users[0].packages;
-        let pkgArray =[];
-        // packages[(users[0].package)] = packageId;
-        let i = 0;
-        for(let pkg in users[0].packages ){
-          pkgArray[i] = pkg;
-          i++;;
+    await onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach(async (document) => {
+        users.push({ ...document.data(), id: document.id });
+        try {
+          console.log(users[0].email);
+          // let packages = users[0].packages;
+          let pkgArray = [];
+          // packages[(users[0].package)] = packageId;
+          let i = 0;
+          for (let pkg in users[0].packages) {
+            pkgArray[i] = pkg;
+            i++;
+          }
+          pkgArray[i] = packageId;
+          await updateDoc(doc(db, 'packages', packageId), {
+            email: receiverEmail,
+          });
+          // await updateDoc(doc(db, 'users', users[0].id), {'packages': packageId});
+          await updateDoc(doc(db, 'users', users[0].id), {
+            packages: arrayUnion(packageId),
+          });
+
+          console.log('Package is about to be sent...');
+        } catch (e) {
+          console.log(e);
+          console.log('Failed!');
         }
-        pkgArray[i] = packageId;
-        await updateDoc(doc(db, 'packages', packageId), {'email': receiverEmail});
-        // await updateDoc(doc(db, 'users', users[0].id), {'packages': packageId});
-        await updateDoc(doc(db, 'users', users[0].id), {'packages': arrayUnion(packageId) });
-        
-
-
-        console.log('Package is about to be sent...')
-      }catch(e){
-        console.log(e);
-        console.log("Failed!");
-      }
- 
+      });
     });
-    
-  })
-  
-};
+  };
 
-  
+  const doPayment = async (packageId, payment) => {
+    try {
+      await updateDoc(doc(db, 'packages', packageId), {
+        paymentAmount: payment,
+      });
+      console.log('Payment is about to be done...');
+    } catch (e) {
+      console.log(e);
+      console.log('Failed!');
+    }
+  };
 
   return (
     <>
@@ -100,6 +124,9 @@ const users =[];
           </p>
           <p>
             Insurance Amount: <span>{insuranceAmount}</span>
+          </p>
+          <p>
+            Customer Payment: <span>{paymentAmount}</span>
           </p>
           <div className='border-y-2 rounded border-slate-500'></div>
           <p>
@@ -145,23 +172,23 @@ const users =[];
             onClick={
               isCustomer
                 ? () => {
-                  setIsSending(!isSending)
-                  // unsubscribe(packageId);
-                }
+                    setIsSending(!isSending);
+                    // unsubscribe(packageId);
+                  }
                 : () => setIsEditing(!isEditing)
             }
           >
             {isCustomer ? 'Send' : 'Edit'}
           </button>
           <button
-            className={
+            className='bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
+            onClick={
               isCustomer
-                ? 'hidden'
-                : 'bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
+                ? () => setIsPaying(true)
+                : () => deletePackage(packageId)
             }
-            onClick={() => deletePackage(packageId)}
           >
-            Delete
+            {isCustomer ? 'Pay' : 'Delete'}
           </button>
         </div>
       </div>
@@ -216,6 +243,31 @@ const users =[];
           }}
         >
           Send
+        </button>
+      </div>
+
+      <div
+        className={
+          isPaying
+            ? 'absolute top-0 left-0 flex items-center justify-center w-full h-screen bg-slate-200 flex-col space-y-4'
+            : 'hidden'
+        }
+      >
+        <h2>Payment Amount</h2>
+        <input
+          className='border-2 rounded'
+          onChange={(e) => setPayment(e.target.value)}
+        />
+        <button
+          className={
+            'bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
+          }
+          onClick={async () => {
+            await doPayment(packageId, payment);
+            setIsPaying(!isPaying);
+          }}
+        >
+          Pay
         </button>
       </div>
     </>
