@@ -8,6 +8,7 @@ import { db } from '../firebase';
 
 const Main = () => {
   const [isCustomer, setIsCustomer] = useState(false);
+const [email, setEmail] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, 'users'));
@@ -19,6 +20,7 @@ const Main = () => {
       users.forEach((user) => {
         if (user.email === auth.currentUser.email) {
           setIsCustomer(user.isCustomer);
+          setEmail(user.email);
           console.log(isCustomer);
         }
       });
@@ -29,7 +31,7 @@ const Main = () => {
   return (
     <div className='m-10'>
       <div className='flex justify-between'>
-        <h2>Welcome {auth.currentUser.email}!</h2>
+        <h2>Welcome {email}!</h2>
         <h3 className='hover:underline cursor-pointer'>
           <button
             onClick={() => {

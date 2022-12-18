@@ -1,8 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc , updateDoc, collection, query, onSnapshot, where, arrayUnion} from 'firebase/firestore';
 import { db } from '../firebase';
 import EditPackage from './EditPackage';
+
 const Package = ({
   isCustomer,
   packageId,
@@ -26,7 +27,7 @@ const Package = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [receiverEmail, setReceiverEmail] = useState('');
-
+const users =[];
   const deletePackage = async (id) => {
     try {
       await deleteDoc(doc(db, 'packages', id));
@@ -35,9 +36,42 @@ const Package = ({
     }
   };
 
-  const sendPackage = async () => {
-    console.log(receiverEmail);
-  };
+    const sendPackage = async (packageId) => {
+      const q = query(collection(db, 'users'), where('email', '==', receiverEmail));
+
+      await onSnapshot (q, (querySnapshot) => {
+      querySnapshot.forEach( async (document) => {
+      users.push({ ...document.data(), id: document.id });
+      try{
+        console.log(users[0].email);
+        // let packages = users[0].packages;
+        let pkgArray =[];
+        // packages[(users[0].package)] = packageId;
+        let i = 0;
+        for(let pkg in users[0].packages ){
+          pkgArray[i] = pkg;
+          i++;;
+        }
+        pkgArray[i] = packageId;
+        await updateDoc(doc(db, 'packages', packageId), {'email': receiverEmail});
+        // await updateDoc(doc(db, 'users', users[0].id), {'packages': packageId});
+        await updateDoc(doc(db, 'users', users[0].id), {'packages': arrayUnion(packageId) });
+        
+
+
+        console.log('Package is about to be sent...')
+      }catch(e){
+        console.log(e);
+        console.log("Failed!");
+      }
+ 
+    });
+    
+  })
+  
+};
+
+  
 
   return (
     <>
@@ -110,7 +144,10 @@ const Package = ({
             }
             onClick={
               isCustomer
-                ? () => setIsSending(!isSending)
+                ? () => {
+                  setIsSending(!isSending)
+                  // unsubscribe(packageId);
+                }
                 : () => setIsEditing(!isEditing)
             }
           >
@@ -174,7 +211,7 @@ const Package = ({
             'bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
           }
           onClick={async () => {
-            await sendPackage();
+            await sendPackage(packageId);
             setIsSending(!isSending);
           }}
         >

@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '../components/Button';
 import Link from 'next/link';
 import { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
+import { doc, addDoc , updateDoc, collection, query, onSnapshot, where, arrayUnion} from 'firebase/firestore';
 import { db } from '../firebase';
 const AddPackage = () => {
   const [email, setEmail] = useState('');
@@ -21,6 +21,7 @@ const AddPackage = () => {
   const [scheduleNumber, setScheduleNumber] = useState('');
   const [retailCenterType, setRetailCenterType] = useState('');
   const [retailCenterName, setRetailCenterName] = useState('');
+  const users =[];
 
   const packagesCollectionRef = collection(db, 'packages');
   const createPackage = async (
@@ -61,10 +62,36 @@ const AddPackage = () => {
         retailCenterName,
       });
       console.log('Document written with ID: ', docRef.id);
+      const users=  await appendPackage(docRef.id, email); 
     } catch (e) {
       console.error('Error adding document: ', e);
     }
   };
+
+const appendPackage = async (packageId, email) => {
+  const q = query(collection(db, 'users'), where('email', '==', email));
+
+  await onSnapshot (q, (querySnapshot) => {
+  querySnapshot.forEach( async (document) => {
+  users.push({ ...document.data(), id: document.id });
+  try{
+    console.log(users[0].email);
+
+    await updateDoc(doc(db, 'users', users[0].id), {'packages': arrayUnion(packageId) });
+    console.log('Package is added')
+  }catch(e){
+    console.log(e);
+    console.log("Package Addition Failed!");
+  }
+
+});
+
+})
+};
+
+
+
+
 
   return (
     <div className='flex flex-col h-screen w-full justify-center items-center'>
@@ -186,7 +213,7 @@ const AddPackage = () => {
       <Link href='/PackageInformation'>
         <Button
           text='Confirm'
-          action={async () =>
+          action={async () =>{
             await createPackage(
               email,
               weight,
@@ -204,7 +231,9 @@ const AddPackage = () => {
               scheduleNumber,
               retailCenterType,
               retailCenterName
-            )
+            );
+            // await appendPackage(packageId, email);
+            }
           }
         ></Button>
       </Link>
