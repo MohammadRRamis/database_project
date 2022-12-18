@@ -30,7 +30,16 @@ const Main = () => {
     <div className='m-10'>
       <div className='flex justify-between'>
         <h2>Welcome {auth.currentUser.email}!</h2>
-        <h3 className='hover:underline cursor-pointer'>Logout</h3>
+        <h3 className='hover:underline cursor-pointer'>
+          <button
+            onClick={() => {
+              auth.signOut();
+              window.location.href = '/';
+            }}
+          >
+            Logout
+          </button>
+        </h3>
       </div>
       <div className='py-12 space-y-4'>
         <div className='flex justify-center space-x-4'>
@@ -43,7 +52,7 @@ const Main = () => {
               }
             ></Box>
           </Link>
-          <Link href={isCustomer ? '/' : '/UserInformation'}>
+          <Link href={isCustomer ? '/PackageOperation' : '/UserInformation'}>
             <Box
               text={
                 isCustomer

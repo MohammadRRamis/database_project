@@ -8,7 +8,7 @@ const SearchPackage = () => {
   const [packages, setPackages] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(db, 'Packge'));
+    const q = query(collection(db, 'packages'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const packages = [];
       querySnapshot.forEach((doc) => {
@@ -35,7 +35,27 @@ const SearchPackage = () => {
         </div>
         <div className='grid grid-cols-2 gap-10'>
           {packages.map((p) => (
-            <Package key={p.value} isCustomer={true} status={p.status} />
+            <Package
+              key={p.value}
+              isCustomer={true}
+              packageId={p.id}
+              email={p.email}
+              weight={p.weight}
+              dimensions={p.dimensions}
+              value={p.value}
+              companyPayment={p.companyPayment}
+              insuranceAmount={p.insuranceAmount}
+              destination={p.destination}
+              finalDeliveryDate={p.finalDeliveryDate}
+              category={p.category}
+              status={p.status}
+              locationType={p.locationType}
+              locationName={p.locationName}
+              transportationType={p.transportationType}
+              scheduleNumber={p.scheduleNumber}
+              retailCenterType={p.retailCenterType}
+              retailCenterName={p.retailCenterName}
+            />
           ))}
         </div>
       </div>

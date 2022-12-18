@@ -24,6 +24,8 @@ const Package = ({
   retailCenterName,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [receiverEmail, setReceiverEmail] = useState('');
 
   const deletePackage = async (id) => {
     try {
@@ -31,6 +33,10 @@ const Package = ({
     } catch (error) {
       console.error('Error removing document: ', error);
     }
+  };
+
+  const sendPackage = async () => {
+    console.log(receiverEmail);
   };
 
   return (
@@ -99,16 +105,26 @@ const Package = ({
         </div>
         <div>
           <button
-            className='bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
-            onClick={() => setIsEditing(!isEditing)}
+            className={
+              'bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
+            }
+            onClick={
+              isCustomer
+                ? () => setIsSending(!isSending)
+                : () => setIsEditing(!isEditing)
+            }
           >
             {isCustomer ? 'Send' : 'Edit'}
           </button>
           <button
-            className='bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
+            className={
+              isCustomer
+                ? 'hidden'
+                : 'bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
+            }
             onClick={() => deletePackage(packageId)}
           >
-            {isCustomer ? 'Receive' : 'Delete'}
+            Delete
           </button>
         </div>
       </div>
@@ -140,6 +156,30 @@ const Package = ({
           currentRetailCenterType={retailCenterType}
           currentRetailCenterName={retailCenterName}
         />
+      </div>
+      <div
+        className={
+          isSending
+            ? 'absolute top-0 left-0 flex items-center justify-center w-full h-screen bg-slate-200 flex-col space-y-4'
+            : 'hidden'
+        }
+      >
+        <h2>Receiver Email</h2>
+        <input
+          className='border-2 rounded'
+          onChange={(e) => setReceiverEmail(e.target.value)}
+        />
+        <button
+          className={
+            'bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded'
+          }
+          onClick={async () => {
+            await sendPackage();
+            setIsSending(!isSending);
+          }}
+        >
+          Send
+        </button>
       </div>
     </>
   );
